@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
     private void intentValues(Intent intent, int index) {
         try {
+            intent.putExtra(getString(R.string.movie_id), mMoviesList.parseJSONLists(Constants.MOVIE_ID).get(index));
             intent.putExtra(getString(R.string.overview_plot), mMoviesList.parseJSONLists(Constants.OVERVIEW).get(index));
             intent.putExtra(getString(R.string.background_image), mMoviesList.parseJSONLists(Constants.BACKGROUND).get(index));
             intent.putExtra(getString(R.string.rating_movie), mMoviesList.parseJSONLists(Constants.RATING).get(index));

@@ -1,23 +1,36 @@
 package com.example.anant.moviesdb.Activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.anant.moviesdb.Adapters.TrailerAdapter;
+import com.example.anant.moviesdb.Async.FetchTrailerJSON;
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
+import com.example.anant.moviesdb.Utilities.TrailerList;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener {
 
     private String mName;
     private String mOverview;
@@ -25,6 +38,9 @@ public class DetailsActivity extends AppCompatActivity {
     private String posterPath;
     private String backgroundPath;
     private String datePath;
+    private String movieId;
+
+    Context context;
 
     @BindView(R.id.background_image)
     ImageView backgroundImage;
@@ -38,16 +54,34 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView posterImage;
     @BindView(R.id.movie_rating)
     TextView movieRating;
+    @BindView(R.id.trailer_recycler_view)
+    RecyclerView trailerRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getOrientation();
         getIntentValues();
         setValues();
+        setRecyclerView();
+        TrailerList trailerList = new TrailerList();
+        new FetchTrailerJSON(this, trailerList, movieId, trailerRecyclerView).execute(Constants.TRAILER_BASE_URL);
+    }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
+    }
+
+    private void setRecyclerView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        trailerRecyclerView.setLayoutManager(linearLayoutManager);
+        trailerRecyclerView.setHasFixedSize(true);
     }
 
     private void getOrientation() {
@@ -58,7 +92,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void setValues() {
 
-        if(isNetworkOnline()) {
+        if (isNetworkOnline()) {
+            context = this;
 
             Picasso.with(this)
                     .load(Constants.IMAGE_BASE_URL + Constants.FILE_SIZE_BACKGROUND + posterPath)
@@ -67,9 +102,7 @@ public class DetailsActivity extends AppCompatActivity {
             Picasso.with(this)
                     .load(Constants.IMAGE_BASE_URL + Constants.FILE_SIZE_BACKGROUND + backgroundPath)
                     .placeholder(R.mipmap.ic_launcher).into(backgroundImage);
-        }
-
-        else {
+        } else {
             posterImage.setVisibility(View.GONE);
             backgroundImage.setVisibility(View.GONE);
         }
@@ -82,6 +115,8 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void getIntentValues() {
+
+        movieId = getIntent().getExtras().getString(getString(R.string.movie_id));
         mName = getIntent().getExtras().getString(getString(R.string.name_movie));
         posterPath = getIntent().getExtras().getString(getString(R.string.posters_image));
         mOverview = getIntent().getExtras().getString(getString(R.string.overview_plot));
@@ -92,11 +127,23 @@ public class DetailsActivity extends AppCompatActivity {
 
     private boolean isNetworkOnline() {
         ConnectivityManager cm =
-                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
+    }
+
+    @Override
+    public void listItemClicked(int index, ArrayList<String> keys) {
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.YOUTUBE_APP_BASE_URL + keys.get(index)));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(Constants.YOUTUBE_WEB_BASE_URL + keys.get(index)));
+        try {
+            context.startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            context.startActivity(webIntent);
+        }
     }
 }
