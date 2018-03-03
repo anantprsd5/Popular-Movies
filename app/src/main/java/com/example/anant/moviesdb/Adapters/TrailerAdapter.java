@@ -5,11 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
-import com.example.anant.moviesdb.Utilities.TrailerList;
+import com.example.anant.moviesdb.Utilities.MovieDetails;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,13 +21,13 @@ import java.util.ArrayList;
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
 
     Context context;
-    private ImageButton trailerImageView;
+    private ImageView trailerImageView;
     private ArrayList<String> mKeys;
-    private TrailerList mTrailerList;
+    private MovieDetails mTrailerList;
     private final ListItemClickListener mListItemClicked;
 
-    public TrailerAdapter(ArrayList<String> keys, TrailerList trailerList, ListItemClickListener itemClickListener) {
-        mTrailerList = trailerList;
+    public TrailerAdapter(ArrayList<String> keys, MovieDetails movieDetails, ListItemClickListener itemClickListener) {
+        mTrailerList = movieDetails;
         mKeys = keys;
         mListItemClicked = itemClickListener;
     }
@@ -66,7 +66,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
         public TrailerViewHolder(View v) {
             super(v);
-            trailerImageView = (ImageButton) v.findViewById(R.id.trailer_image_view);
+            trailerImageView = (ImageView) v.findViewById(R.id.trailer_image_view);
             trailerImageView.setOnClickListener(this);
         }
 

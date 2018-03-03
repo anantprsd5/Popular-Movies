@@ -9,20 +9,19 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.anant.moviesdb.Adapters.ReviewsAdapter;
 import com.example.anant.moviesdb.Adapters.TrailerAdapter;
-import com.example.anant.moviesdb.Async.FetchTrailerJSON;
+import com.example.anant.moviesdb.Async.FetchDetailsJSON;
+import com.example.anant.moviesdb.Async.FetchReviewsJSON;
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
-import com.example.anant.moviesdb.Utilities.TrailerList;
+import com.example.anant.moviesdb.Utilities.MovieDetails;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -56,6 +55,8 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
     TextView movieRating;
     @BindView(R.id.trailer_recycler_view)
     RecyclerView trailerRecyclerView;
+    @BindView(R.id.reviews_recycler_view)
+    RecyclerView reviewsRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +69,26 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
         getIntentValues();
         setValues();
         setRecyclerView();
-        TrailerList trailerList = new TrailerList();
-        new FetchTrailerJSON(this, trailerList, movieId, trailerRecyclerView).execute(Constants.TRAILER_BASE_URL);
+        setReviewsRecyclerView();
+        fetchTrailers();
+        fetchReviews();
+
+    }
+
+    private void fetchReviews() {
+        MovieDetails movieDetails = new MovieDetails();
+        new FetchReviewsJSON(this, movieDetails, movieId, trailerRecyclerView, "reviews", reviewsRecyclerView).execute(Constants.TRAILER_BASE_URL);
+    }
+
+    private void fetchTrailers() {
+        MovieDetails movieDetails = new MovieDetails();
+        new FetchDetailsJSON(this, movieDetails, movieId, trailerRecyclerView, "videos", reviewsRecyclerView).execute(Constants.TRAILER_BASE_URL);
+    }
+
+    private void setReviewsRecyclerView() {
+        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(this);
+        reviewsRecyclerView.setLayoutManager(linearLayoutManager);
+        reviewsRecyclerView.setHasFixedSize(true);
     }
 
     @Override

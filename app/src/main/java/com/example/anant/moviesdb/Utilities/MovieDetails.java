@@ -19,17 +19,17 @@ import java.util.Scanner;
  * Created by anant on 28/2/18.
  */
 
-public class TrailerList {
+public class MovieDetails {
 
     private String mJSONResults;
 
-    private URL buildURL(String URL, String id) {
+    private URL buildURL(String URL, String id, String type) {
 
         URL url = null;
 
         Uri builtUri = Uri.parse(URL).buildUpon().
                 appendPath(id).
-                appendPath("videos").
+                appendPath(type).
                 appendQueryParameter("api_key", com.example.anant.moviesdb.BuildConfig.YOU_API_KEY).
                 appendQueryParameter("language", "en-US").
                 build();
@@ -42,11 +42,12 @@ public class TrailerList {
         return url;
     }
 
-    public String getJSONResponse(String url, String id) throws IOException {
+    public String getJSONResponse(String url, String id, String type) throws IOException {
 
         mJSONResults = null;
 
-        HttpURLConnection urlConnection = (HttpURLConnection) buildURL(url, id).openConnection();
+        HttpURLConnection urlConnection = (HttpURLConnection) buildURL(url, id, type).openConnection();
+        Log.wtf("urlForReviews", buildURL(url, id, type).toString());
 
         try {
             InputStream in = urlConnection.getInputStream();
@@ -54,6 +55,7 @@ public class TrailerList {
             scanner.useDelimiter("\\A");
             if (scanner.hasNext()) {
                 mJSONResults = scanner.next();
+                Log.wtf("asgagag", mJSONResults);
                 return mJSONResults;
             } else return null;
         } finally {
@@ -73,6 +75,23 @@ public class TrailerList {
                 mylist.add(path.getString("key"));
             }
         }
+        return mylist;
+    }
+
+
+    //To get the author and the Reviews. if 0th index contains the author, the next one is the review.
+
+    public ArrayList<String> parseJSONReviews() throws JSONException {
+
+        ArrayList<String> mylist = new ArrayList<String>();
+        JSONObject jsonObject = new JSONObject(mJSONResults);
+        JSONArray array = jsonObject.getJSONArray("results");
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject path = array.getJSONObject(i);
+            mylist.add(path.getString("author"));
+            mylist.add(path.getString("content"));
+        }
+        Log.wtf("Reviews list", mylist.toString());
         return mylist;
     }
 
