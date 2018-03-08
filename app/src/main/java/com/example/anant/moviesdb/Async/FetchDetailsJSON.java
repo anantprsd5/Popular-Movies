@@ -28,16 +28,13 @@ public class FetchDetailsJSON extends AsyncTask<String, Void, String> {
     private ArrayList<String> trailerKeys;
     private RecyclerView mRecyclerView;
     private String type;
-    private ArrayList<String> reviews;
-    private RecyclerView mReviewsRecyclerView;
 
-    public FetchDetailsJSON(Context context, MovieDetails movieDetails, String id, RecyclerView recyclerView, String type, RecyclerView reviewsRecyclerView) {
+    public FetchDetailsJSON(Context context, MovieDetails movieDetails, String id, RecyclerView recyclerView, String type) {
         mContext = context;
         mTrailerList = movieDetails;
         mID = id;
         mRecyclerView = recyclerView;
         this.type = type;
-        mReviewsRecyclerView = reviewsRecyclerView;
     }
 
     @Override
@@ -56,22 +53,12 @@ public class FetchDetailsJSON extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String s) {
         if (s != null) {
-            if (type == "videos") {
-                try {
-                    trailerKeys = mTrailerList.parseJSONLists();
-                    TrailerAdapter adapter = new TrailerAdapter(trailerKeys, mTrailerList, (TrailerAdapter.ListItemClickListener) mContext);
-                    mRecyclerView.setAdapter(adapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    reviews = mTrailerList.parseJSONReviews();
-                    ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviews);
-                    mReviewsRecyclerView.setAdapter(reviewsAdapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            try {
+                trailerKeys = mTrailerList.parseJSONLists();
+                TrailerAdapter adapter = new TrailerAdapter(trailerKeys, mTrailerList, (TrailerAdapter.ListItemClickListener) mContext);
+                mRecyclerView.setAdapter(adapter);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
         super.onPostExecute(s);

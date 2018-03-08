@@ -2,12 +2,10 @@ package com.example.anant.moviesdb.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
@@ -22,19 +20,17 @@ import java.util.ArrayList;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
 
     private Context context;
-    private int mNumberImages;
     private ImageView mMoviesImage;
     private ArrayList<String> mList;
     private final ListItemClickListener mListItemClicked;
 
-    public MoviesAdapter(int numberOfImages, ArrayList<String> list, ListItemClickListener listItemClickListener){
+    public MoviesAdapter(ArrayList<String> list, ListItemClickListener listItemClickListener) {
 
-        mNumberImages = numberOfImages;
         mList = list;
         mListItemClicked = listItemClickListener;
     }
 
-    public interface ListItemClickListener{
+    public interface ListItemClickListener {
         void listItemClicked(int index);
     }
 
@@ -49,27 +45,26 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     @Override
     public void onBindViewHolder(MoviesViewHolder holder, final int position) {
         Picasso.with(context)
-                .load(Constants.IMAGE_BASE_URL+Constants.FILE_SIZE+ mList.get(position))
+                .load(Constants.IMAGE_BASE_URL + Constants.FILE_SIZE + mList.get(position))
                 .placeholder(R.drawable.loading_image).resize(500, 750)
                 .into(mMoviesImage);
     }
 
     @Override
     public int getItemCount() {
-        return mNumberImages;
+        return mList.size();
     }
 
     @Override
-    public int getItemViewType(int position)
-    {
+    public int getItemViewType(int position) {
         return position;
     }
 
-    public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public MoviesViewHolder(View v){
+        public MoviesViewHolder(View v) {
             super(v);
-            mMoviesImage = (ImageView)v.findViewById(R.id.item_image);
+            mMoviesImage = (ImageView) v.findViewById(R.id.item_image);
             mMoviesImage.setOnClickListener(this);
         }
 

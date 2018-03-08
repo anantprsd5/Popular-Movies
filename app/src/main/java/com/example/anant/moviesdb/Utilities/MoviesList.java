@@ -22,12 +22,12 @@ import java.util.Scanner;
 
 public class MoviesList {
 
-    public MoviesList(){
+    public MoviesList() {
     }
 
     private String mJSONResults;
 
-    private URL buildURL(String URL){
+    private URL buildURL(String URL) {
 
         URL url = null;
         Uri builtUri = Uri.parse(URL).buildUpon().
@@ -35,7 +35,7 @@ public class MoviesList {
                 appendQueryParameter("language", "en-US").
                 build();
         try {
-            url =new URL(builtUri.toString());
+            url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -48,7 +48,6 @@ public class MoviesList {
         mJSONResults = null;
 
         HttpURLConnection urlConnection = (HttpURLConnection) buildURL(url).openConnection();
-        Log.wtf("asf", buildURL(url).toString());
 
         try {
             InputStream in = urlConnection.getInputStream();
@@ -58,8 +57,7 @@ public class MoviesList {
                 mJSONResults = scanner.next();
                 return mJSONResults;
             } else return null;
-        }
-        finally {
+        } finally {
             urlConnection.disconnect();
         }
     }
@@ -70,7 +68,7 @@ public class MoviesList {
 
         JSONObject jsonObject = new JSONObject(mJSONResults);
         JSONArray array = jsonObject.getJSONArray("results");
-        for(int i = 0; i<array.length();i++){
+        for (int i = 0; i < array.length(); i++) {
             JSONObject path = array.getJSONObject(i);
             mylist.add(path.getString(type));
         }

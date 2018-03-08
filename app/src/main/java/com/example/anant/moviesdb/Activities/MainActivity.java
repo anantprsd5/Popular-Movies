@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
@@ -15,6 +14,7 @@ import com.example.anant.moviesdb.Adapters.MoviesAdapter;
 import com.example.anant.moviesdb.Async.FetchJSON;
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
+import com.example.anant.moviesdb.Utilities.Helper;
 import com.example.anant.moviesdb.Utilities.MoviesList;
 
 import org.json.JSONException;
@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
         mMoviesList = new MoviesList();
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, calculateNoOfColumns());
+        Helper helper = new Helper(this);
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this, helper.calculateNoOfColumns());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         new FetchJSON(mRecyclerView, mErrorNetwork, mProgress,mMoviesList, this).execute(Constants.POPULAR_BASE_URL);
@@ -87,12 +89,5 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private int calculateNoOfColumns() {
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-        int numColumns = (int) (dpWidth / 180);
-        return numColumns > 2 ? numColumns : 2;
     }
 }

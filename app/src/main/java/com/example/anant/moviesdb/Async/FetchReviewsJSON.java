@@ -5,10 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.example.anant.moviesdb.Adapters.ReviewsAdapter;
-import com.example.anant.moviesdb.Adapters.TrailerAdapter;
 import com.example.anant.moviesdb.Utilities.MovieDetails;
 
 import org.json.JSONException;

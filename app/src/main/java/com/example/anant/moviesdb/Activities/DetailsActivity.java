@@ -1,26 +1,35 @@
 package com.example.anant.moviesdb.Activities;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.anant.moviesdb.Adapters.ReviewsAdapter;
 import com.example.anant.moviesdb.Adapters.TrailerAdapter;
 import com.example.anant.moviesdb.Async.FetchDetailsJSON;
 import com.example.anant.moviesdb.Async.FetchReviewsJSON;
+import com.example.anant.moviesdb.Data.FavouriteMoviesContract;
+import com.example.anant.moviesdb.Data.FavouritesDbHelper;
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
+import com.example.anant.moviesdb.Utilities.Helper;
 import com.example.anant.moviesdb.Utilities.MovieDetails;
 import com.squareup.picasso.Picasso;
 
@@ -57,6 +66,10 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
     RecyclerView trailerRecyclerView;
     @BindView(R.id.reviews_recycler_view)
     RecyclerView reviewsRecyclerView;
+    @BindView(R.id.button_favourite)
+    Button favButton;
+
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,23 +85,73 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
         setReviewsRecyclerView();
         fetchTrailers();
         fetchReviews();
+        FavouritesDbHelper favouritesDbHelper = new FavouritesDbHelper(this);
+        db = favouritesDbHelper.getWritableDatabase();
+        if (checkIfExists(mName))
+            changeButtonState();
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkIfExists(mName))
+                    return;
+                else {
+                    addData();
+                    Intent intent = new Intent(DetailsActivity.this, FavouritesActivity.class);
+                    startActivity(intent);
+                    changeButtonState();
+                }
+            }
+        });
 
+    }
+
+    private Boolean checkIfExists(String movieName) {
+        Boolean value = false;
+        Helper helper = new Helper(this);
+        Cursor cursor = helper.getFavMovies(db);
+        while (cursor.moveToNext()) {
+            if (movieName.equals(cursor.getString(cursor.getColumnIndex(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_NAME)))) {
+                value = true;
+                break;
+            }
+        }
+        return value;
+    }
+
+    private long addData() {
+        ContentValues cv = new ContentValues();
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_NAME, mName);
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_RATING, mRating);
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_DATE, movieDate.getText().toString());
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_POSTER_IMAGE, posterPath);
+        return db.insert(FavouriteMoviesContract.FavouriteEntry.TABLE_NAME, null, cv);
+    }
+
+    private void changeButtonState() {
+        Drawable img = getResources().getDrawable(R.drawable.ic_favorite_pink_24dp);
+        favButton.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        View view_instance = (View) findViewById(R.id.button_favourite);
+        ViewGroup.LayoutParams params = view_instance.getLayoutParams();
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        favButton.setLayoutParams(params);
+        favButton.setText(R.string.added_fav_text);
     }
 
     private void fetchReviews() {
         MovieDetails movieDetails = new MovieDetails();
-        new FetchReviewsJSON(this, movieDetails, movieId, trailerRecyclerView, "reviews", reviewsRecyclerView).execute(Constants.TRAILER_BASE_URL);
+        new FetchReviewsJSON(this, movieDetails, movieId, getString(R.string.reviews_key), reviewsRecyclerView).execute(Constants.TRAILER_BASE_URL);
     }
 
     private void fetchTrailers() {
         MovieDetails movieDetails = new MovieDetails();
-        new FetchDetailsJSON(this, movieDetails, movieId, trailerRecyclerView, "videos", reviewsRecyclerView).execute(Constants.TRAILER_BASE_URL);
+        new FetchDetailsJSON(this, movieDetails, movieId, trailerRecyclerView, getString(R.string.videos_key)).execute(Constants.TRAILER_BASE_URL);
     }
 
     private void setReviewsRecyclerView() {
-        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         reviewsRecyclerView.setLayoutManager(linearLayoutManager);
         reviewsRecyclerView.setHasFixedSize(true);
+        reviewsRecyclerView.setNestedScrollingEnabled(false);
     }
 
     @Override

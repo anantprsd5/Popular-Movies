@@ -70,7 +70,7 @@ public class FetchJSON extends AsyncTask<String, Void, String>{
         if(s!=null && isNetworkOnline()){
             try {
                 ArrayList<String> posters = mMoviesList.parseJSONLists(Constants.POSTER_PATH);
-                MoviesAdapter mMoviesAdapter = new MoviesAdapter(posters.size(), posters, (MoviesAdapter.ListItemClickListener) mContext);
+                MoviesAdapter mMoviesAdapter = new MoviesAdapter(posters, (MoviesAdapter.ListItemClickListener) mContext);
                 mRecyclerView.setAdapter(mMoviesAdapter);
                 mRecyclerView.setVisibility(View.VISIBLE);
                 mProgress.setVisibility(View.INVISIBLE);

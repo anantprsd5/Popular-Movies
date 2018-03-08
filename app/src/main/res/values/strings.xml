@@ -14,4 +14,7 @@
     <string name="tap_to_play">Tap to play</string>
     <string name="movie_id">Movie_ID</string>
     <string name="andre_gomez"><u>Andre Gomez</u></string>
+    <string name="added_fav_text">Added</string>
+    <string name="reviews_key">reviews</string>
+    <string name="videos_key">videos</string>
 </resources>

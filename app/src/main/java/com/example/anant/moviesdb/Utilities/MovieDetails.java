@@ -47,7 +47,6 @@ public class MovieDetails {
         mJSONResults = null;
 
         HttpURLConnection urlConnection = (HttpURLConnection) buildURL(url, id, type).openConnection();
-        Log.wtf("urlForReviews", buildURL(url, id, type).toString());
 
         try {
             InputStream in = urlConnection.getInputStream();
@@ -55,7 +54,6 @@ public class MovieDetails {
             scanner.useDelimiter("\\A");
             if (scanner.hasNext()) {
                 mJSONResults = scanner.next();
-                Log.wtf("asgagag", mJSONResults);
                 return mJSONResults;
             } else return null;
         } finally {
@@ -91,7 +89,6 @@ public class MovieDetails {
             mylist.add(path.getString("author"));
             mylist.add(path.getString("content"));
         }
-        Log.wtf("Reviews list", mylist.toString());
         return mylist;
     }
 
