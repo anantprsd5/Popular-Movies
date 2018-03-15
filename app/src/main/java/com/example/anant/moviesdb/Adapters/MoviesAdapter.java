@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
+import com.example.anant.moviesdb.Utilities.MoviesList;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -32,6 +33,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     public interface ListItemClickListener {
         void listItemClicked(int index);
+    }
+
+    public void setData(ArrayList<String> newList){
+        mList = newList;
+        notifyDataSetChanged();
     }
 
     @Override

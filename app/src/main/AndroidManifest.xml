@@ -21,7 +21,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.DetailsActivity" />
-        <activity android:name=".Activities.FavouritesActivity"></activity>
+
+        <provider
+            android:name="com.example.anant.moviesdb.Data.FavouriteContentProvider"
+            android:authorities="com.example.anant.moviesdb"
+            android:exported="false"></provider>
     </application>
 
 </manifest>

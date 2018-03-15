@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Created by anant on 21/9/17.
  */
 
-public class FetchJSON extends AsyncTask<String, Void, String>{
+public class FetchJSON extends AsyncTask<String, Void, String> {
 
     MoviesList mMoviesList;
     RecyclerView mRecyclerView;
@@ -30,7 +30,7 @@ public class FetchJSON extends AsyncTask<String, Void, String>{
     TextView mErrorNetwork;
     Context mContext;
 
-    public FetchJSON(RecyclerView recyclerView, TextView errorNetwork, ProgressBar progressBar,MoviesList moviesList, Context context){
+    public FetchJSON(RecyclerView recyclerView, TextView errorNetwork, ProgressBar progressBar, MoviesList moviesList, Context context) {
         mRecyclerView = recyclerView;
         mProgress = progressBar;
         mErrorNetwork = errorNetwork;
@@ -41,12 +41,11 @@ public class FetchJSON extends AsyncTask<String, Void, String>{
 
     @Override
     protected void onPreExecute() {
-        if(isNetworkOnline()) {
+        if (isNetworkOnline()) {
             mProgress.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.INVISIBLE);
             mErrorNetwork.setVisibility(View.INVISIBLE);
-        }
-        else {
+        } else {
             mProgress.setVisibility(View.INVISIBLE);
             mRecyclerView.setVisibility(View.INVISIBLE);
             mErrorNetwork.setVisibility(View.VISIBLE);
@@ -58,7 +57,7 @@ public class FetchJSON extends AsyncTask<String, Void, String>{
     protected String doInBackground(String... params) {
         String s = null;
         try {
-            s =  mMoviesList.getJSONResponse(params[0]);
+            s = mMoviesList.getJSONResponse(params[0]);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,7 +66,7 @@ public class FetchJSON extends AsyncTask<String, Void, String>{
 
     @Override
     protected void onPostExecute(String s) {
-        if(s!=null && isNetworkOnline()){
+        if (s != null && isNetworkOnline()) {
             try {
                 ArrayList<String> posters = mMoviesList.parseJSONLists(Constants.POSTER_PATH);
                 MoviesAdapter mMoviesAdapter = new MoviesAdapter(posters, (MoviesAdapter.ListItemClickListener) mContext);
@@ -83,7 +82,7 @@ public class FetchJSON extends AsyncTask<String, Void, String>{
 
     private boolean isNetworkOnline() {
         ConnectivityManager cm =
-                (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&

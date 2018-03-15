@@ -1,5 +1,6 @@
 package com.example.anant.moviesdb.Data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -8,10 +9,16 @@ import android.provider.BaseColumns;
 
 public final class FavouriteMoviesContract {
 
-    private FavouriteMoviesContract() {
-    }
+    public static final String AUTHORITY = "com.example.anant.moviesdb";
 
-    public final class FavouriteEntry implements BaseColumns {
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+
+    public static final String path = "favourites";
+
+
+    public static final class FavouriteEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(path).build();
 
         public static final String TABLE_NAME = "favourites";
         public static final String COLUMN_MOVIE_NAME = "movieName";

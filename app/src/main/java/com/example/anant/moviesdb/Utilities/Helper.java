@@ -15,7 +15,7 @@ public class Helper {
 
     private Context mContext;
 
-    public Helper(Context context){
+    public Helper(Context context) {
         mContext = context;
     }
 
@@ -24,17 +24,5 @@ public class Helper {
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         int numColumns = (int) (dpWidth / 180);
         return numColumns > 2 ? numColumns : 2;
-    }
-
-    public Cursor getFavMovies(SQLiteDatabase db) {
-
-        return db.query(FavouriteMoviesContract.FavouriteEntry.TABLE_NAME,
-                new String[]{FavouriteMoviesContract.FavouriteEntry.COLUMN_POSTER_IMAGE, FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_NAME},
-                null,
-                null,
-                null,
-                null,
-                FavouriteMoviesContract.FavouriteEntry._ID);
-
     }
 }

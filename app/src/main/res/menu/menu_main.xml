@@ -18,6 +18,11 @@
                     android:checked="false"
                     android:title="@string/top_rated"
                     app:showAsAction="never" />
+                <item
+                    android:id="@+id/favourite_sort_action"
+                    android:checked="false"
+                    android:title="@string/top_rated"
+                    app:showAsAction="never" />
             </group>
         </menu>
     </item>

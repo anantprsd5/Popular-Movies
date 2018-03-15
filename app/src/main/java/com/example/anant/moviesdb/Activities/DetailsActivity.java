@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,10 +25,8 @@ import com.example.anant.moviesdb.Adapters.TrailerAdapter;
 import com.example.anant.moviesdb.Async.FetchDetailsJSON;
 import com.example.anant.moviesdb.Async.FetchReviewsJSON;
 import com.example.anant.moviesdb.Data.FavouriteMoviesContract;
-import com.example.anant.moviesdb.Data.FavouritesDbHelper;
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
-import com.example.anant.moviesdb.Utilities.Helper;
 import com.example.anant.moviesdb.Utilities.MovieDetails;
 import com.squareup.picasso.Picasso;
 
@@ -69,7 +66,6 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
     @BindView(R.id.button_favourite)
     Button favButton;
 
-    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +81,6 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
         setReviewsRecyclerView();
         fetchTrailers();
         fetchReviews();
-        FavouritesDbHelper favouritesDbHelper = new FavouritesDbHelper(this);
-        db = favouritesDbHelper.getWritableDatabase();
         if (checkIfExists(mName))
             changeButtonState();
         favButton.setOnClickListener(new View.OnClickListener() {
@@ -96,8 +90,6 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
                     return;
                 else {
                     addData();
-                    Intent intent = new Intent(DetailsActivity.this, FavouritesActivity.class);
-                    startActivity(intent);
                     changeButtonState();
                 }
             }
@@ -107,8 +99,12 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
 
     private Boolean checkIfExists(String movieName) {
         Boolean value = false;
-        Helper helper = new Helper(this);
-        Cursor cursor = helper.getFavMovies(db);
+        Cursor cursor = getContentResolver().query(FavouriteMoviesContract.FavouriteEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+
         while (cursor.moveToNext()) {
             if (movieName.equals(cursor.getString(cursor.getColumnIndex(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_NAME)))) {
                 value = true;
@@ -118,13 +114,14 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
         return value;
     }
 
-    private long addData() {
+    private void addData() {
         ContentValues cv = new ContentValues();
         cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_NAME, mName);
         cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_RATING, mRating);
         cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_DATE, movieDate.getText().toString());
         cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_POSTER_IMAGE, posterPath);
-        return db.insert(FavouriteMoviesContract.FavouriteEntry.TABLE_NAME, null, cv);
+        Uri uri = getContentResolver().insert(FavouriteMoviesContract.FavouriteEntry.CONTENT_URI, cv);
+        Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void changeButtonState() {
