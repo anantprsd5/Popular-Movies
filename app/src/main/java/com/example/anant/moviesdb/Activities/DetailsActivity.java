@@ -27,6 +27,7 @@ import com.example.anant.moviesdb.Async.FetchReviewsJSON;
 import com.example.anant.moviesdb.Data.FavouriteMoviesContract;
 import com.example.anant.moviesdb.R;
 import com.example.anant.moviesdb.Utilities.Constants;
+import com.example.anant.moviesdb.Utilities.Helper;
 import com.example.anant.moviesdb.Utilities.MovieDetails;
 import com.squareup.picasso.Picasso;
 
@@ -44,6 +45,7 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
     private String backgroundPath;
     private String datePath;
     private String movieId;
+    private Helper mHelper;
 
     Context context;
 
@@ -77,6 +79,7 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
         getOrientation();
         getIntentValues();
         setValues();
+        mHelper = new Helper(this);
         setRecyclerView();
         setReviewsRecyclerView();
         fetchTrailers();
@@ -90,6 +93,7 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
                     return;
                 else {
                     addData();
+                    Toast.makeText(getApplicationContext(), mHelper.getTrailerKeys(), Toast.LENGTH_SHORT).show();
                     changeButtonState();
                 }
             }
@@ -120,6 +124,10 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
         cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_RATING, mRating);
         cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_DATE, movieDate.getText().toString());
         cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_POSTER_IMAGE, posterPath);
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_DETAILS, mOverview);
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_BACKGROUND_IMAGE, backgroundPath);
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_TRAILERS, mHelper.getTrailerKeys());
+        cv.put(FavouriteMoviesContract.FavouriteEntry.COLUMN_REVIEWS, mHelper.getReviews());
         Uri uri = getContentResolver().insert(FavouriteMoviesContract.FavouriteEntry.CONTENT_URI, cv);
         Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
     }
@@ -136,12 +144,12 @@ public class DetailsActivity extends AppCompatActivity implements TrailerAdapter
 
     private void fetchReviews() {
         MovieDetails movieDetails = new MovieDetails();
-        new FetchReviewsJSON(this, movieDetails, movieId, getString(R.string.reviews_key), reviewsRecyclerView).execute(Constants.TRAILER_BASE_URL);
+        new FetchReviewsJSON(this, movieDetails, movieId, getString(R.string.reviews_key), reviewsRecyclerView, mHelper).execute(Constants.TRAILER_BASE_URL);
     }
 
     private void fetchTrailers() {
         MovieDetails movieDetails = new MovieDetails();
-        new FetchDetailsJSON(this, movieDetails, movieId, trailerRecyclerView, getString(R.string.videos_key)).execute(Constants.TRAILER_BASE_URL);
+        new FetchDetailsJSON(this, movieDetails, movieId, trailerRecyclerView, getString(R.string.videos_key), mHelper).execute(Constants.TRAILER_BASE_URL);
     }
 
     private void setReviewsRecyclerView() {

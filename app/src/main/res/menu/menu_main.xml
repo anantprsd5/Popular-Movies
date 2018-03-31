@@ -21,7 +21,7 @@
                 <item
                     android:id="@+id/favourite_sort_action"
                     android:checked="false"
-                    android:title="@string/top_rated"
+                    android:title="@string/favourites"
                     app:showAsAction="never" />
             </group>
         </menu>

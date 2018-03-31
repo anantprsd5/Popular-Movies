@@ -26,6 +26,7 @@ public class MoviesList {
     }
 
     private String mJSONResults;
+    ArrayList<String> mylist = new ArrayList<String>();
 
     private URL buildURL(String URL) {
 
@@ -49,6 +50,8 @@ public class MoviesList {
 
         HttpURLConnection urlConnection = (HttpURLConnection) buildURL(url).openConnection();
 
+        Log.wtf("url", buildURL(url).toString());
+
         try {
             InputStream in = urlConnection.getInputStream();
             Scanner scanner = new Scanner(in);
@@ -63,8 +66,6 @@ public class MoviesList {
     }
 
     public ArrayList<String> parseJSONLists(String type) throws JSONException {
-
-        ArrayList<String> mylist = new ArrayList<String>();
 
         JSONObject jsonObject = new JSONObject(mJSONResults);
         JSONArray array = jsonObject.getJSONArray("results");

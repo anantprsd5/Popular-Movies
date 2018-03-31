@@ -27,6 +27,7 @@ public final class FavouriteMoviesContract {
         public static final String COLUMN_MOVIE_TRAILERS = "movieTrailers";
         public static final String COLUMN_REVIEWS = "movieReview";
         public static final String COLUMN_BACKGROUND_IMAGE = "movieBackground";
+        public static final String COLUMN_MOVIE_DETAILS = "movieDetails";
         public static final String COLUMN_POSTER_IMAGE = "moviePoster";
 
     }

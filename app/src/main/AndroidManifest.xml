@@ -23,9 +23,11 @@
         <activity android:name=".Activities.DetailsActivity" />
 
         <provider
-            android:name="com.example.anant.moviesdb.Data.FavouriteContentProvider"
+            android:name=".Data.FavouriteContentProvider"
             android:authorities="com.example.anant.moviesdb"
-            android:exported="false"></provider>
+            android:exported="false" />
+
+        <activity android:name=".Activities.FavouritesActivity"></activity>
     </application>
 
 </manifest>

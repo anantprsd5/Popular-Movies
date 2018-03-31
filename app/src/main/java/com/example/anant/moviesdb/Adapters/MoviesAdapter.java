@@ -32,12 +32,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     }
 
     public interface ListItemClickListener {
-        void listItemClicked(int index);
-    }
-
-    public void setData(ArrayList<String> newList){
-        mList = newList;
-        notifyDataSetChanged();
+        void listItemClicked(int index, String movieName);
     }
 
     @Override
@@ -77,7 +72,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            mListItemClicked.listItemClicked(position);
+            String moviePoster = mList.get(position);
+            mListItemClicked.listItemClicked(position, moviePoster);
         }
     }
 }

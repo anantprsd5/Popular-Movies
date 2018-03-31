@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.example.anant.moviesdb.Adapters.ReviewsAdapter;
 import com.example.anant.moviesdb.Adapters.TrailerAdapter;
+import com.example.anant.moviesdb.Utilities.Helper;
 import com.example.anant.moviesdb.Utilities.MovieDetails;
 
 import org.json.JSONException;
@@ -28,13 +29,15 @@ public class FetchDetailsJSON extends AsyncTask<String, Void, String> {
     private ArrayList<String> trailerKeys;
     private RecyclerView mRecyclerView;
     private String type;
+    private Helper mHelper;
 
-    public FetchDetailsJSON(Context context, MovieDetails movieDetails, String id, RecyclerView recyclerView, String type) {
+    public FetchDetailsJSON(Context context, MovieDetails movieDetails, String id, RecyclerView recyclerView, String type, Helper helper) {
         mContext = context;
         mTrailerList = movieDetails;
         mID = id;
         mRecyclerView = recyclerView;
         this.type = type;
+        mHelper = helper;
     }
 
     @Override
@@ -57,6 +60,7 @@ public class FetchDetailsJSON extends AsyncTask<String, Void, String> {
                 trailerKeys = mTrailerList.parseJSONLists();
                 TrailerAdapter adapter = new TrailerAdapter(trailerKeys, mTrailerList, (TrailerAdapter.ListItemClickListener) mContext);
                 mRecyclerView.setAdapter(adapter);
+                mHelper.setTrailerKeys(trailerKeys);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

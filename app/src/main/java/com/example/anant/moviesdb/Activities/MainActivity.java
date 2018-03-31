@@ -8,9 +8,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.anant.moviesdb.Adapters.MoviesAdapter;
 import com.example.anant.moviesdb.Async.FetchJSON;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
     private MoviesAdapter moviesAdapter;
     private boolean favList;
+    private boolean isScrolling;
+    FetchJSON fetchJSON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +55,32 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
 
         Helper helper = new Helper(this);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, helper.calculateNoOfColumns());
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, helper.calculateNoOfColumns());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-        new FetchJSON(mRecyclerView, mErrorNetwork, mProgress, mMoviesList, this).execute(Constants.POPULAR_BASE_URL);
+        fetchJSON = new FetchJSON(mRecyclerView, mErrorNetwork, mProgress, mMoviesList, this);
+        fetchJSON.execute(Constants.POPULAR_BASE_URL);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int childCount = layoutManager.getChildCount();
+                int total = layoutManager.getItemCount();
+                int scrolledOutItem = layoutManager.findFirstVisibleItemPosition();
+                if(isScrolling && (scrolledOutItem + childCount == total)){
+                    isScrolling = false;
+
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                    isScrolling = true;
+                }
+            }
+        });
 
     }
 
@@ -69,12 +94,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.popular_sort_action) {
             item.setChecked(true);
+            favList = false;
             new FetchJSON(mRecyclerView, mErrorNetwork, mProgress, mMoviesList, this).execute(Constants.POPULAR_BASE_URL);
         } else if (item.getItemId() == R.id.top_sort_action) {
             item.setChecked(true);
+            favList = false;
             new FetchJSON(mRecyclerView, mErrorNetwork, mProgress, mMoviesList, this).execute(Constants.TOP_RATED);
         } else if (item.getItemId() == R.id.favourite_sort_action) {
             getFavMoviesList();
+            item.setChecked(true);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -95,12 +123,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Lis
     }
 
     @Override
-    public void listItemClicked(int index) {
+    public void listItemClicked(int index, String moviePoster) {
         if (!favList) {
             Intent intent = new Intent(this, DetailsActivity.class);
             intentValues(intent, index);
             startActivity(intent);
         } else {
+            Intent intent = new Intent(this, FavouritesActivity.class);
+            intent.putExtra(getString(R.string.posters_image), moviePoster);
+            startActivity(intent);
         }
     }
 

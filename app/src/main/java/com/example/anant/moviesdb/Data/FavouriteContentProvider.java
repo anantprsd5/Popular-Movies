@@ -51,7 +51,7 @@ public class FavouriteContentProvider extends ContentProvider {
 
             case FAVOURITES:
                 retCursor = db.query(FavouriteMoviesContract.FavouriteEntry.TABLE_NAME,
-                        new String[]{FavouriteMoviesContract.FavouriteEntry.COLUMN_POSTER_IMAGE, FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_NAME},
+                        null,
                         null,
                         null,
                         null,
@@ -62,15 +62,14 @@ public class FavouriteContentProvider extends ContentProvider {
             case SINGLE_FAVOURITE:
                 //to get the name of the movie which is appended at the last
                 String movie = uri.getPathSegments().get(1);
-                String mSelection = "movieName=?";
-                String[] mSelectionArgs = new String[]{movie};
+                String mSelection = "moviePoster=?";
+                String[] mSelectionArgs = new String[]{"/" + movie};
                 retCursor = db.query(FavouriteMoviesContract.FavouriteEntry.TABLE_NAME,
-                        new String[]{FavouriteMoviesContract.FavouriteEntry.COLUMN_POSTER_IMAGE, FavouriteMoviesContract.FavouriteEntry.COLUMN_MOVIE_NAME},
+                        null,
                         mSelection,
                         mSelectionArgs,
                         null,
-                        null,
-                        FavouriteMoviesContract.FavouriteEntry._ID);
+                        null, null);
                 break;
 
             default:
@@ -121,21 +120,12 @@ public class FavouriteContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        int match = sUriMatcher.match(uri);
         int index;
+        index = db.delete(FavouriteMoviesContract.FavouriteEntry.TABLE_NAME,
+                selection,
+                selectionArgs);
 
-        switch (match) {
-
-            case SINGLE_FAVOURITE:
-                //to get the name of the movie which is appended at the last
-                index = db.delete(FavouriteMoviesContract.FavouriteEntry.TABLE_NAME,
-                        selection,
-                        selectionArgs);
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Uri:" + uri);
-        }
+        getContext().getContentResolver().notifyChange(uri, null);
         return index;
     }
 

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.anant.moviesdb.Adapters.ReviewsAdapter;
+import com.example.anant.moviesdb.Utilities.Helper;
 import com.example.anant.moviesdb.Utilities.MovieDetails;
 
 import org.json.JSONException;
@@ -26,13 +27,15 @@ public class FetchReviewsJSON extends AsyncTask<String, Void, String> {
     private String type;
     private ArrayList<String> reviews;
     private RecyclerView mReviewsRecyclerView;
+    private Helper helper;
 
-    public FetchReviewsJSON(Context context, MovieDetails movieDetails, String id, String type, RecyclerView reviewsRecyclerView) {
+    public FetchReviewsJSON(Context context, MovieDetails movieDetails, String id, String type, RecyclerView reviewsRecyclerView, Helper helper) {
         mContext = context;
         mTrailerList = movieDetails;
         mID = id;
         this.type = type;
         mReviewsRecyclerView = reviewsRecyclerView;
+        this.helper = helper;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class FetchReviewsJSON extends AsyncTask<String, Void, String> {
                 try {
                     reviews = mTrailerList.parseJSONReviews();
                     ReviewsAdapter reviewsAdapter = new ReviewsAdapter(reviews);
+                    helper.setReviewsArray(reviews);
                     mReviewsRecyclerView.setAdapter(reviewsAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
